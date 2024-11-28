@@ -8,6 +8,6 @@ interface IUniswapV3Toaster {
         address tokenOut;
         uint24 fee;
         uint256 amountIn;
-        uint24 slippage;
+        uint160 sqrtPriceLimitX96;
     }
 }

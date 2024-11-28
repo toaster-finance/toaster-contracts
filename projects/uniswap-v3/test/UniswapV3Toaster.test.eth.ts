@@ -121,7 +121,7 @@ describe("UniswapV3Toaster", () => {
         tokenOut,
         fee: 3000,
         amountIn: swapAmountIn,
-        slippage: 1e4 // 1% slippage
+        sqrtPriceLimitX96: 0
       };
 
     const mintParams: IApproveAndCall.MintParamsStruct = {
@@ -231,7 +231,7 @@ describe("UniswapV3Toaster", () => {
         tokenOut,
         fee: 3000,
         amountIn: swapAmountIn,
-        slippage: 1e4 // 1% slippage
+        sqrtPriceLimitX96: 0,
       };
 
     const mintParams: IApproveAndCall.MintParamsStruct = {
@@ -338,7 +338,7 @@ describe("UniswapV3Toaster", () => {
         tokenOut,
         fee: 3000,
         amountIn: swapAmountIn,
-        slippage: 1e4 // 1% slippage
+        sqrtPriceLimitX96: 0,
       };
 
     const mintParams: IApproveAndCall.MintParamsStruct = {
@@ -444,7 +444,7 @@ describe("UniswapV3Toaster", () => {
         tokenOut,
         fee: 3000,
         amountIn: swapAmountIn,
-        slippage: 1e4 // 1% slippage
+        sqrtPriceLimitX96: 0,
       };
 
     const mintParams: IApproveAndCall.MintParamsStruct = {
@@ -551,7 +551,7 @@ describe("UniswapV3Toaster", () => {
         tokenOut,
         fee: 3000,
         amountIn: swapAmountIn,
-        slippage: 1e4 // 1% slippage
+        sqrtPriceLimitX96: 0,  
       };
 
     const mintParams: IApproveAndCall.MintParamsStruct = {
@@ -657,7 +657,7 @@ describe("UniswapV3Toaster", () => {
         tokenOut,
         fee: 3000,
         amountIn: swapAmountIn,
-        slippage: 1e4 // 1% slippage
+        sqrtPriceLimitX96: 0
       };
 
     const mintParams: IApproveAndCall.MintParamsStruct = {
@@ -756,10 +756,10 @@ describe("UniswapV3Toaster", () => {
       await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
       const nativeInputAmount = c.randomETH;
 
-      const tick = await ethers
+      const [tick, sqrtPriceX96] = await ethers
         .getContractAt("IUniswapV3Pool", CONFIG.POOL_MATIC_WETH)
         .then((l) => l.slot0())
-        .then((slot0) => slot0.tick);
+        .then((slot0) => [slot0.tick, slot0.sqrtPriceX96]);
       const [swapAmountIn, swapAmountOut, isSwap0] =
         await menu.getSwapAmountForAddLiquidity({
           pool: CONFIG.POOL_MATIC_WETH,
@@ -779,7 +779,7 @@ describe("UniswapV3Toaster", () => {
           tokenOut,
           fee: 3000,
           amountIn: swapAmountIn,
-          slippage: 1e4 // 1% slippage
+          sqrtPriceLimitX96: isSwap0 ? sqrtPriceX96  * 99n / 100n : sqrtPriceX96  * 101n / 100n// 1% slippage
         };
 
       const mintParams: IApproveAndCall.MintParamsStruct = {
