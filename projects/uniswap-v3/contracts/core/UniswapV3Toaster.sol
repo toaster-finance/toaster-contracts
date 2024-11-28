@@ -37,7 +37,7 @@ contract UniswapV3Toaster is
         require(
             params.slippage == 0 ||
                 (params.slippage > 1e2 && params.slippage < 1e5),
-            "Slippage must be 0 or between 0.01% and 100%"
+            "Slippage must be 0 or between 0.01% and 10%"
         );
         uint160 sqrtPriceLimitX96;
         {
