@@ -34,10 +34,29 @@ contract UniswapV3Toaster is
     function exactInputSingleBySelf(
         ExactInputBySelfParams memory params
     ) external payable returns (uint256 amountOut) {
+        require(
+            params.slippage == 0 ||
+                (params.slippage > 1e2 && params.slippage < 1e5),
+            "Slippage must be 0 or between 0.01% and 100%"
+        );
+        uint160 sqrtPriceLimitX96;
+        {
+            bool inputTokenIsSmaller = params.tokenIn < params.tokenOut;
+            (address tokenA, address tokenB) = inputTokenIsSmaller
+                ? (params.tokenIn, params.tokenOut)
+                : (params.tokenOut, params.tokenIn);
+            (uint160 crtSqrtPriceX96, , , , , , ) = IUniswapV3Pool(
+                IUniswapV3Factory(factory).getPool(tokenA, tokenB, params.fee)
+            ).slot0();
+            sqrtPriceLimitX96 = inputTokenIsSmaller
+                ? (crtSqrtPriceX96 * (1e6 - params.slippage)) / 1e6
+                : (crtSqrtPriceX96 * (1e6 + params.slippage)) / 1e6;
+        }
+
         amountOut = exactInputInternal(
             params.amountIn,
             address(this),
-            0,
+            sqrtPriceLimitX96,
             SwapCallbackData({
                 path: abi.encodePacked(
                     params.tokenIn,
