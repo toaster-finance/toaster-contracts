@@ -37,7 +37,7 @@ contract UniswapV3Toaster is
         amountOut = exactInputInternal(
             params.amountIn,
             address(this),
-            0,
+            params.sqrtPriceLimitX96,
             SwapCallbackData({
                 path: abi.encodePacked(
                     params.tokenIn,
